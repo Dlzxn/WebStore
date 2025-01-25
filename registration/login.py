@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response
 from fastapi.responses import FileResponse
-import json
+
 
 from models.database.CRUD import get_users
 from models.user_models import User
@@ -13,15 +13,12 @@ async def login():
 
 @login_rout.post("/auth")
 async def login_post(user: User, response: Response):
-    if get_users(user.username, user.password):
-        data ={
-            "user": {
-                "username": user.username,
-                "money": 5300,
-            }
-        }
+    data = get_users(user.username, user.password)
+    print("[INFO] Data: ", data[1].id)
+    if data:
         response.set_cookie(key = "name", value = user.username)
-        response.set_cookie(key="money", value=5300)
+        response.set_cookie(key="money", value = data[1].money)
+        response.set_cookie(key = "id", value = data[1].id)
         return {"status": True}
     else:
         return {"status": False}

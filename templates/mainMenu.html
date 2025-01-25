@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Store</title>
+    <title>Онлайн Store</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -93,6 +93,7 @@
             <p><strong>Имя:</strong> {{ request.user.name }}</p>
             <p><strong>Баланс:</strong> {{ request.user.money }} руб</p>
             <button onclick="location.href='/profile'">В профиль</button>
+            <button onclick="location.href='/exit'">Выйти</button>
         </div>
     </div>
 
@@ -138,39 +139,62 @@
     </div>
 
     <div class="product-list">
-        {% for product in request.products %}
-        <div class="product" onclick="showProduct('{{ product.name }}', '{{ product.description }}', '{{ product.price }}')">
-            <h3>{{ product.name }}</h3>
-            <p>{{ product.description }}</p>
-            <p class="price">{{ product.price }} руб</p>
-        </div>
-        {% endfor %}
+    {% for product in request.products %}
+    <div class="product" onclick="showProduct('{{ product.id }}', '{{ product.name }}', '{{ product.description }}', '{{ product.price }}')">
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.description }}</p>
+        <p class="price">{{ product.price }} руб</p>
+        <button class="add-to-cart" onclick="addToCart({{product.id}}, {{request.user.id}})">Добавить в корзину</button>
     </div>
+    {% endfor %}
+</div>
 
-    <div id="product-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <h2 id="modal-title"></h2>
-            <p id="modal-description"></p>
-            <p id="modal-price"></p>
-            <button class="add-to-cart" onclick="addToCart()">Добавить в корзину</button>
-        </div>
+<div id="product-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 id="modal-title"></h2>
+        <p id="modal-description"></p>
+        <p id="modal-price"></p>
     </div>
+</div>
 
-    <script>
-        function showProduct(name, description, price) {
-            document.getElementById('modal-title').innerText = name;
-            document.getElementById('modal-description').innerText = description;
-            document.getElementById('modal-price').innerText = `$${price}`;
-            document.getElementById('product-modal').style.display = 'flex';
-        }
+<script>
+    let selectedProductId = null;
+
+    function showProduct(id, name, description, price) {
+        selectedProductId = id;  // Сохраняем ID товара
+        document.getElementById('modal-title').innerText = name;
+        document.getElementById('modal-description').innerText = description;
+        document.getElementById('modal-price').innerText = `${price} руб`;
+        document.getElementById('product-modal').style.display = 'flex';
+    }
 
         function closeModal() {
             document.getElementById('product-modal').style.display = 'none';
         }
 
-        function addToCart() {
-            alert('Добавлено в корзину');
+        function addToCart(productId, userId) {
+            fetch('/myproducts/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    product_id: String(productId),
+                    user_id: String(userId)
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Товар добавлен в корзину');
+                } else {
+                    alert('Ошибка при добавлении в корзину');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Ошибка сети');
+            });
         }
     </script>
 </body>

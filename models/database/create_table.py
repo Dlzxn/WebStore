@@ -15,6 +15,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), nullable=False)
     password = Column(String(100), unique=False, nullable=False)
+    money = Column(Integer, nullable=False, default=0)
 
 class Ticket(Base):
     __tablename__ = 'Tickets'
@@ -29,6 +30,14 @@ class Product(Base):
     name = Column(String(50), nullable=False)
     description = Column(String(100), nullable=False)
     price = Column(Integer, nullable=False)
+
+class Myproducts(Base):
+    __tablename__ = 'Myproducts'
+    id = Column(Integer, primary_key=True, index=True)
+    id_user = Column(Integer, ForeignKey('Users.id'), nullable=False)
+    id_product = Column(Integer, ForeignKey('Products.id'), nullable=False)
+
+
 
 # Создание таблиц в базе данных
 def create_tables():
