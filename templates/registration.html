@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .registration-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 350px;
+        }
+        .registration-container h2 {
+            margin-bottom: 20px;
+            color: #b71c1c;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .register-btn {
+            background-color: #b71c1c;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+        .register-btn:hover {
+            transform: scale(1.05);
+        }
+        .login-link {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #555;
+        }
+        .login-link a {
+            color: #b71c1c;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        async function registerUser() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const response = await fetch('/registration/base', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const result = await response.json();
+            if (result.status === true) {
+                window.location.href = '/login';
+            } else {
+                alert('Registration failed!');
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="registration-container">
+        <h2>Регистрация</h2>
+        <div class="input-group">
+            <input type="text" id="username" placeholder="Username" required>
+        </div>
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Password" required>
+        </div>
+        <button class="register-btn" onclick="registerUser()">Зарегистрироваться</button>
+        <p class="login-link">Уже есть аккаунт?
+        <a href="/login">Войти</a>
+        </p>
+    </div>
+</body>
+</html>

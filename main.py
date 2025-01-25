@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates
 
-from mainmenu.main_menu import main_menu
+from mainmenu.main_menu import main_menu as menu
+from registration import registration, login
 
 app = FastAPI()
-# app.include_router(main_menu)
+app.include_router(registration.reg_rout)
+app.include_router(login.login_rout)
 
 data = {
     "user": {
