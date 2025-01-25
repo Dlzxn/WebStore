@@ -24,6 +24,7 @@
             font-size: 28px;
             font-weight: bold;
             letter-spacing: 1px;
+            cursor: pointer;
         }
         .header .controls {
             display: flex;
@@ -86,55 +87,55 @@
 </head>
 <body>
     <div id="profile-popup" class="profile-popup">
-    <div class="profile-content">
-        <span class="close-profile" onclick="closeProfilePopup()">&times;</span>
-        <h3>Профиль</h3>
-        <p><strong>Имя:</strong> {{ request.user.name }}</p>
-        <p><strong>Баланс:</strong> {{ request.user.money }} руб</p>
+        <div class="profile-content">
+            <span class="close-profile" onclick="closeProfilePopup()">&times;</span>
+            <h3>Профиль</h3>
+            <p><strong>Имя:</strong> {{ request.user.name }}</p>
+            <p><strong>Баланс:</strong> {{ request.user.money }} руб</p>
+            <button onclick="location.href='/profile'">В профиль</button>
+        </div>
     </div>
-</div>
 
-<style>
-    .profile-popup {
-        display: none;
-        position: fixed;
-        top: 10%;
-        right: 5%;
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.3);
-        z-index: 1000;
-    }
-    .profile-content {
-        text-align: left;
-    }
-    .close-profile {
-        float: right;
-        font-size: 24px;
-        cursor: pointer;
-        color: #b71c1c;
-    }
-</style>
+    <style>
+        .profile-popup {
+            display: none;
+            position: fixed;
+            top: 10%;
+            right: 5%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        .profile-content {
+            text-align: left;
+        }
+        .close-profile {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #b71c1c;
+        }
+    </style>
 
-<script>
-    function showProfilePopup() {
-        document.getElementById('profile-popup').style.display = 'block';
-    }
+    <script>
+        function showProfilePopup() {
+            document.getElementById('profile-popup').style.display = 'block';
+        }
+        function closeProfilePopup() {
+            document.getElementById('profile-popup').style.display = 'none';
+        }
+    </script>
 
-    function closeProfilePopup() {
-        document.getElementById('profile-popup').style.display = 'none';
-    }
-</script>
-
-<div class="header">
-    <div class="logo">Online Shop</div>
-    <div class="controls">
-        <span>Баланс: {{ request.user.money }}руб</span>
-        <span onclick="location.href='/myproducts'">🛒 Корзина</span>
-        <span onclick="showProfilePopup()">👤 {{ request.user.name }}</span>
+    <div class="header">
+        <div class="logo" onclick="location.href='/'">Online Shop</div>
+        <div class="controls">
+            <span>Баланс: {{ request.user.money }} руб</span>
+            <span onclick="location.href='/myproducts'">🛒 Корзина</span>
+            <span onclick="showProfilePopup()">👤 {{ request.user.name }}</span>
+        </div>
     </div>
-</div>
 
     <div class="product-list">
         {% for product in request.products %}

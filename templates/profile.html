@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .header {
+            background-color: rgba(183, 28, 28, 0.9);
+            color: #fff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .header .logo {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+        .header .controls {
+            display: flex;
+            align-items: center;
+        }
+        .header .controls span {
+            margin-left: 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .profile-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 400px;
+            margin-top: 100px;
+        }
+        .profile-container h2 {
+            color: #b71c1c;
+            margin-bottom: 20px;
+        }
+        .balance {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+        .orders {
+            text-align: left;
+        }
+        .order {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .order-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .status-circle {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #ddd;
+        }
+        .status-circle.active {
+            background-color: #b71c1c;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo" onclick="location.href='/'">MyStore</div>
+        <div class="controls">
+            <span>Balance: ${{ request.money }}</span>
+            <span><a href="/myproducts" style="text-decoration: none; color: inherit;">🛒 Cart</a></span>
+            <span><a href="/profile" style="text-decoration: none; color: inherit;">👤 Profile</a></span>
+
+        </div>
+    </div>
+    <div class="profile-container">
+        <h2>Welcome, {{ request.name }}</h2>
+        <p class="balance">Balance: ${{ request.money }}</p>
+        <div class="orders">
+            <h3>Your Orders</h3>
+            {% for order in request.orders %}
+            <div class="order">
+                <p>Order #{{ order.id }} - {{ order.product_name }}</p>
+                <div class="order-status">
+                    <div class="status-circle {% if order.status == 'processing' %}active{% endif %}"></div>
+                    <div class="status-circle {% if order.status == 'shipping' %}active{% endif %}"></div>
+                    <div class="status-circle {% if order.status == 'delivered' %}active{% endif %}"></div>
+                </div>
+                <p>Status: {{ order.status }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
