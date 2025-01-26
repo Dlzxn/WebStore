@@ -11,11 +11,24 @@ class UserBase(BaseModel):
     name: str
     money: int
 
-class AddProduct(BaseModel):
-    product_id: str | int | float
-    user_id: str | int | float
+class AddProducts(BaseModel):
+    product_id: str
+    user_id: str
 
 
 class PayAll(BaseModel):
     user_id: str | int | float
     total_price: int | str
+
+class AddProduct(BaseModel):
+    name: str
+    description: str
+    price: int | str
+
+class UpdateUser(BaseModel):
+    id: str | int | float
+    balance: int | str
+
+class UpdateStatus(BaseModel):
+    id: str | int | float
+    status: str

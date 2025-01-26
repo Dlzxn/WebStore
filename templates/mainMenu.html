@@ -180,8 +180,8 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    product_id: String(productId),
-                    user_id: String(userId)
+                    product_id: String(productId).toString(),
+                    user_id: String(userId).toString()
                 })
             })
             .then(response => {

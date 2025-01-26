@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h2 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #b71c1c;
+            color: #fff;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #b71c1c;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #a31515;
+        }
+        input {
+            padding: 8px;
+            width: 90%;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Продукты</h2>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Цена</th>
+                <th>Действия</th>
+            </tr>
+            {% for product in request.products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td><input type="text" value="{{ product.name }}" id="product-name-{{ product.id }}"></td>
+                <td><input type="number" value="{{ product.price }}" id="product-price-{{ product.id }}"></td>
+                <td>
+                    <button onclick="updateProduct({{ product.id }})">Изменить</button>
+                    <button onclick="deleteProduct({{ product.id }})">Удалить</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button onclick="showAddProductModal()">Добавить продукт</button>
+
+        <div id="add-product-modal" class="modal">
+            <h2>Добавить продукт</h2>
+            <input type="text" id="new-product-name" placeholder="Название продукта">
+            <input type="text" id="new-product-category" placeholder="Отдел">
+            <input type="text" id="new-product-description" placeholder="Описание продукта">
+            <input type="number" id="new-product-price" placeholder="Цена продукта">
+            <button onclick="addProduct()">Добавить</button>
+            <button onclick="closeAddProductModal()">Закрыть</button>
+        </div>
+
+        <h2>Пользователи</h2>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Баланс</th>
+                <th>Действия</th>
+            </tr>
+            {% for user in request.users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td><input type="number" value="{{ user.balance }}" id="user-balance-{{ user.id }}"></td>
+                <td>
+                    <button onclick="updateUser({{ user.id }})">Изменить баланс</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h2>Заказы</h2>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+            {% for order in request.tickets %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.status }}</td>
+                <td>
+                    <button onclick="updateOrderStatus({{ order.id }}, 'processing')">Получен</button>
+                    <button onclick="updateOrderStatus({{ order.id }}, 'shipping')">Готовится</button>
+                    <button onclick="updateOrderStatus({{ order.id }}, 'delivered')">Доставляется</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <script>
+        function showAddProductModal() {
+            document.getElementById('add-product-modal').style.display = 'block';
+        }
+        function closeAddProductModal() {
+            document.getElementById('add-product-modal').style.display = 'none';
+        }
+        function addProduct() {
+            const name = document.getElementById('new-product-name').value;
+            const category = document.getElementById('new-product-category').value;
+            const description = document.getElementById('new-product-description').value;
+            const price = document.getElementById('new-product-price').value;
+            fetch('/admin/add_product', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, description: description, price: price })
+            }).then(response => response.json())
+              .then(data => {
+                alert('Продукт добавлен!');
+                location.reload();
+              })
+              .catch(error => alert('Ошибка добавления продукта'));
+        }
+        function updateUser(userId) {
+    const balance = document.getElementById(`user-balance-${userId}`).value;
+    fetch('/admin/update_user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: userId, balance: balance })
+    }).then(response => response.json())
+      .then(data => {
+          alert('Баланс обновлен!');
+          location.reload();
+      })
+      .catch(error => alert('Ошибка обновления баланса'));
+}
+function updateOrderStatus(orderId, status) {
+    fetch('/admin/update_ticket_status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: orderId, status: status })
+    }).then(response => response.json())
+      .then(data => {
+          alert(`Статус заказа #${orderId} изменен на ${status}`);
+          location.reload();
+      })
+      .catch(error => alert('Ошибка обновления статуса заказа'));
+}
+
+    </script>
+</body>
+</html>

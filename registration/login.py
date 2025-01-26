@@ -13,12 +13,16 @@ async def login():
 
 @login_rout.post("/auth")
 async def login_post(user: User, response: Response):
-    data = get_users(user.username, user.password)
-    print("[INFO] Data: ", data[1].id)
-    if data:
-        response.set_cookie(key = "name", value = user.username)
-        response.set_cookie(key="money", value = data[1].money)
-        response.set_cookie(key = "id", value = data[1].id)
-        return {"status": True}
-    else:
+    try:
+        data = get_users(user.username, user.password)
+        print("[INFO] Data: ", data[1].id)
+        if data:
+            response.set_cookie(key = "name", value = user.username)
+            response.set_cookie(key="money", value = data[1].money)
+            response.set_cookie(key = "id", value = data[1].id)
+            return {"status": True}
+        else:
+            return {"status": False}
+    except Exception as e:
+        print(f"[ERROR] Login err - {e}")
         return {"status": False}

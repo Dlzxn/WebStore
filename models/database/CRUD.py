@@ -39,33 +39,44 @@ def get_user_info(id) -> tuple | bool:
     session = SessionLocal()
     users = session.query(User).all()
     for user in users:
-        if user.id == id:
+        if str(user.id) == str(id):
             return user
     session.close()
     return False
 
-def create_ticket(product_name, status, user_id):
+def create_ticket(user_id):
     session = SessionLocal()
-    new_user = Ticket(product_name = product_name, status = status, user_id = user_id)
+
+    products = get_product_in(user_id)[0]
+    product_name: str = ''
+    for x in products:
+        product_name += x.name
+        product_name += " "
+
+    new_user = Ticket(product_name = product_name, status = "processing", user_id = user_id)
+    print(f'[INFO] New ticket created: {new_user}')
+
     session.add(new_user)
     session.commit()
     session.close()
+
     print(f"Тикет {product_name} добавлен")
 
-def get_ticket(id) -> tuple[list, int]:
+
+def get_ticket(id) -> list:
     session = SessionLocal()
     tickets = session.query(Ticket).all()
 
     tick_id: list = []
-    total_price: int = 0
+    print(f'[USER_ID] {id}')
 
     for ticket in tickets:
-        print(ticket)
-        if ticket.id == id:
-            tick_id.append(ticket.id)
-            total_price += int(ticket.price)
+        print(f'[INFO] All id users tickets: {ticket.user_id}')
+        if int(ticket.user_id) == int(id):
+            tick_id.append(ticket)
     session.close()
-    return tick_id, total_price
+    return tick_id
+
 
 def create_product(name, description, price):
     session = SessionLocal()
@@ -121,3 +132,58 @@ def get_product_in(id) -> tuple[list, int]:
     return tick_info, total_price
 
 
+
+#Операции для выбора всех(админ панель)
+
+def get_all_users() -> list:
+    session = SessionLocal()
+    users = session.query(User).all()
+    users_all: list = []
+    for user in users:
+        users_all.append(user)
+    session.close()
+    return users_all
+
+def get_all_ticket() -> list:
+    session = SessionLocal()
+    tickets = session.query(Ticket).all()
+
+    tick_id: list = []
+
+    for ticket in tickets:
+        tick_id.append(ticket)
+    session.close()
+    return tick_id
+
+#+get_products но он уже есть, а мы соблюдаем(почти) DRY
+
+def update_user_balance(user_id: int, new_balance: float) -> None:
+    session = SessionLocal()
+    user = session.query(User).filter(User.id == user_id).first()
+    user.money = new_balance
+    session.commit()
+    session.close()
+
+def update_order_status(id: int, new_status: str) -> None:
+    session = SessionLocal()
+    ticket = session.query(Ticket).filter(Ticket.id == id).first()
+    ticket.status = new_status
+    session.commit()
+    session.close()
+
+
+def delete_all_products_by_user(user_id: int) -> None:
+    session = SessionLocal()
+
+    # Получаем все товары пользователя
+    products = session.query(Myproducts).filter(Myproducts.id_user == user_id).all()
+
+    if products:
+        for product in products:
+            session.delete(product)
+        session.commit()
+        print(f"Все товары пользователя с ID {user_id} удалены.")
+    else:
+        print(f"У пользователя с ID {user_id} нет товаров.")
+
+    session.close()

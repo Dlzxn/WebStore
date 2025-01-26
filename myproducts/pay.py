@@ -2,8 +2,9 @@ from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from models.database.CRUD import get_ticket, add_product, get_product_in, get_user_info, update_user_money
-from models.user_models import AddProduct, PayAll
+from models.database.CRUD import (get_ticket, add_product, get_product_in, get_user_info, update_user_money, create_ticket,
+                                  delete_all_products_by_user)
+from models.user_models import AddProducts, PayAll
 
 pay_rout = APIRouter(prefix="/myproducts")
 
@@ -31,7 +32,7 @@ async def get_pay(request: Request):
         return RedirectResponse(url="/")
 
 @pay_rout.post("/add")
-async def pay_add(data: AddProduct):
+async def pay_add(data: AddProducts):
     print(f"[INFO] Add product: {data}")
     add_product(data.user_id, data.product_id)
     return {"status": True}
@@ -42,13 +43,18 @@ async def pay_start(data: PayAll):
     try:
         user = get_user_info(data.user_id) #получаем данные из бд
         if user:
-            if  user.money>= int(data.total_price):
+            if  user.money >= int(data.total_price):
+                print(f'[INFO] User payed ticket: {data}')
                 update_user_money(data.user_id, user.money - data.total_price) #обновление денег в бд
+                create_ticket(data.user_id)
+                delete_all_products_by_user(data.user_id)
 
                 return {"status": True}
             else:
+                print(f'[ERROR] User dont payed ticket: {data}')
                 return {"status": False}
         else:
+            print(f'[ERROR] User dont payed ticket: {data}')
             return {"status": False}
 
     except Exception as e:
