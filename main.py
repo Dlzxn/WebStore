@@ -10,8 +10,8 @@ from models.database.CRUD import get_products, get_user_info
 from myproducts import pay
 from admin import admin_panel
 
-app = FastAPI()
-app.include_router(registration.reg_rout)
+app = FastAPI() # инициализация веб приложения
+app.include_router(registration.reg_rout) #добавление роутеров
 app.include_router(login.login_rout)
 
 app.include_router(profile_user.profile_rout)
@@ -21,8 +21,16 @@ app.include_router(pay.pay_rout)
 app.include_router(admin_panel.adm_rout)
 
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="templates") #создание джинжа шаблона(он используется для динамической подгрузки данных в HTML
+
 def create_data(name: str, money: int | str, id_user: str) -> dict:
+    """
+    функция для создания данных о пользователе в один dict
+    :param name:
+    :param money:
+    :param id_user:
+    :return:
+    """
     print("[INFO]- ", name)
     data = {
     "user": {
@@ -36,6 +44,13 @@ def create_data(name: str, money: int | str, id_user: str) -> dict:
 
 @app.get("/")
 async def main_menu(request: Request, response: Response):
+    """
+    функция главного меню, здесь
+    идет создание/обновление cookie
+    :param request:
+    :param response:
+    :return:
+    """
     try:
         print("Cookie:", request.cookies)
         name: str = request.cookies.get("name")
@@ -59,6 +74,12 @@ async def main_menu(request: Request, response: Response):
 
 @app.get("/exit")
 async def exit_login(response: Response):
+    """
+    функция выхода с профиля
+    Идет удаление всеех cookie
+    :param response:
+    :return:
+    """
     response.delete_cookie("name")
     response.delete_cookie("money")
     response.delete_cookie("data")

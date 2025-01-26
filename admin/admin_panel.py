@@ -61,5 +61,4 @@ async def update_status(data: UpdateStatus):
         print(f"[ERROR] Error Dont update status: {er}")
         return {"status": False}
 
-
-
+#все пост запросы посредственные, они фоново вызываются при нажатии на кнопку, в данном случае кнопки в админ меню

@@ -12,6 +12,13 @@ profile_rout = APIRouter(prefix="/profile")
 
 @profile_rout.get("/")
 async def profile(request: Request):
+    """
+    функция профиля, идет сбор данных о
+    всех заказах пользователя а так же сбор cookie
+    все это передается в HTML посредством jinja2
+    :param request:
+    :return:
+    """
     try:
         print("Cookie:", request.cookies)
         name: str = request.cookies.get("name")

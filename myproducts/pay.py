@@ -33,12 +33,24 @@ async def get_pay(request: Request):
 
 @pay_rout.post("/add")
 async def pay_add(data: AddProducts):
+    """
+    Функция, которой передаются данные для занесения в бд
+    через нее проходит добавление в корзину самих товаров
+    :param data:
+    :return:
+    """
     print(f"[INFO] Add product: {data}")
     add_product(data.user_id, data.product_id)
     return {"status": True}
 
 @pay_rout.post("/start")
 async def pay_start(data: PayAll):
+    """
+    эта функция получает пост запрос когда мы нажимаем оплатиь, проверяются все нужные условия
+    снимаются деньги и после этого создается заказ
+    :param data:
+    :return:
+    """
     print(f"[INFO] PayAll: {data}")
     try:
         user = get_user_info(data.user_id) #получаем данные из бд
@@ -60,3 +72,6 @@ async def pay_start(data: PayAll):
     except Exception as e:
         print(f"[ERROR] {e}")
         return {"status": False}
+
+
+#P.S. По факту дела, это не функции, а корутины, если говорить правильно
